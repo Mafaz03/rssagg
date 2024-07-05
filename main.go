@@ -4,19 +4,41 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sql"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+	"github.com/Mafaz03/internal/database"
+	_ "github.com/lib/pq"
 )
 
 func main() {
 
 	godotenv.Load()
 
+
 	portString := os.Getenv("PORT")
 	if portString == "" {
 		log.Fatal("Port not found in env")
+	}
+
+	DB_url := os.Getenv("DB_URL")
+	if DB_url == "" {
+		log.Fatal("DB URL not found in env")
+	}
+
+	conn, err := sql.Open(("postgres", DB_url)
+	if err != nil {
+		log.Fatal("Connection to DB Failed")
+	}
+
+	type apiConfig struct {
+		DB *database.Queries
+	}
+
+	apiCfg := apiConfig{
+		DB: database.New(conn),
 	}
 
 	router := chi.NewRouter()
