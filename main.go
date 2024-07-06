@@ -4,14 +4,18 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"sql"
+	"database/sql"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
-	"github.com/Mafaz03/internal/database"
+	"github.com/Mafaz03/rssagg/internal/database"
 	_ "github.com/lib/pq"
 )
+
+type apiConfig struct {
+	DB *database.Queries
+}
 
 func main() {
 
@@ -28,13 +32,9 @@ func main() {
 		log.Fatal("DB URL not found in env")
 	}
 
-	conn, err := sql.Open(("postgres", DB_url)
+	conn, err := sql.Open("postgres", DB_url)
 	if err != nil {
 		log.Fatal("Connection to DB Failed")
-	}
-
-	type apiConfig struct {
-		DB *database.Queries
 	}
 
 	apiCfg := apiConfig{
@@ -54,6 +54,7 @@ func main() {
 	r1router := chi.NewRouter()
 	r1router.Get("/healthz", handler_readiness)
 	r1router.Get("/err", handler_err)
+	r1router.Post("/users", apiCfg.handler_CreateUsers)
 
 	router.Mount("/v1", r1router)
 
@@ -62,7 +63,7 @@ func main() {
 		Addr:    ":" + portString,
 	}
 	log.Printf("listening on Port number: %v", portString)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatal("ERROR: ", err)
 	}
