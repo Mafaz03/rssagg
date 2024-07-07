@@ -1,15 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
-	"database/sql"
 
+	"github.com/Mafaz03/rssagg/internal/database"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
-	"github.com/Mafaz03/rssagg/internal/database"
 	_ "github.com/lib/pq"
 )
 
@@ -20,7 +20,6 @@ type apiConfig struct {
 func main() {
 
 	godotenv.Load()
-
 
 	portString := os.Getenv("PORT")
 	if portString == "" {
@@ -55,6 +54,10 @@ func main() {
 	r1router.Get("/healthz", handler_readiness)
 	r1router.Get("/err", handler_err)
 	r1router.Post("/users", apiCfg.handler_CreateUsers)
+	r1router.Get("/getusers", apiCfg.GetUsersByKey)
+	r1router.Get("/users", apiCfg.middlewareAuth(apiCfg.GetUsersByAuth))
+	r1router.Post("/feeds", apiCfg.middlewareAuth(apiCfg.handler_CreateFeed))
+	r1router.Get("/feeds", apiCfg.handler_GetFeed)
 
 	router.Mount("/v1", r1router)
 
