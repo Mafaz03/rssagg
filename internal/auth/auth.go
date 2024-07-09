@@ -14,7 +14,7 @@ func GetApiKey(header http.Header) (string, error) {
 	vals := strings.Split(val, " ")
 
 	if len(vals[0]) != 64 {
-		return "", fmt.Errorf("somethings wrong witht the api key: %v", vals[0])
+		return "", fmt.Errorf("somethings wrong with the api key: %v", vals[0])
 	}
 	return vals[0], nil
 }
