@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"fmt"
 
 	"github.com/Mafaz03/rssagg/internal/database"
 	"github.com/go-chi/chi"
@@ -18,6 +19,9 @@ type apiConfig struct {
 }
 
 func main() {
+
+	feed, _ := urlToFeed("https://wagslane.dev/index.xml")
+	fmt.Println(feed)
 
 	godotenv.Load()
 
